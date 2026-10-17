@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#define C_BLACK 0x0000u
+#define C_BLACK 0x0000u\n#define C_SILHOUETTE 0x10A2u
 #define C_FOG   0x3186u
 #define C_TREE  0x632Cu
 #define C_LIGHT 0xBDF7u
@@ -57,6 +57,50 @@ static void draw_hud(const dr_game_t *g, const dr_draw_api_t *d) {
     draw_text(d, 8, 7, 2, line, C_LIGHT);
     (void)snprintf(line, sizeof(line), "BEST  %06lu", (unsigned long)g->best_score);
     draw_text(d, 8, 21, 2, line, C_ACCENT);
+}
+
+
+/* Fixed star positions keep the night sky stable across frames and replays. */
+static void draw_atmosphere(const dr_draw_api_t *d, int w, int horizon) {
+    static const uint8_t stars[][2] = {
+        {5, 9}, {13, 25}, {23, 14}, {31, 35}, {42, 8}, {54, 20},
+        {68, 12}, {79, 30}, {93, 7}, {107, 22}, {121, 11}, {137, 29},
+        {151, 15}, {166, 6}, {183, 24}, {199, 10}, {214, 34}, {231, 17},
+        {248, 7}, {263, 26}, {281, 13}, {297, 31}, {315, 9}, {333, 20},
+        {351, 5}, {370, 28}, {389, 14}, {407, 8}, {426, 24}, {447, 12},
+        {466, 32}, {487, 6}, {506, 18}, {527, 10}, {548, 27}, {570, 7},
+        {593, 21}, {616, 12}
+    };
+    for (size_t i = 0; i < sizeof(stars) / sizeof(stars[0]); ++i) {
+        const int x = (int)stars[i][0] * w / 640;
+        const int y = (int)stars[i][1] * horizon / 40;
+        if (x < w && y < horizon - 3)
+            rect(d, x, y, (i % 5u == 0u) ? 2 : 1, 1,
+                 (i % 4u == 0u) ? C_LIGHT : C_FOG);
+    }
+
+    /* A tiny pixel-moon with a dark edge reads well on the narrow display. */
+    const int mx = w * 5 / 6;
+    const int my = horizon / 4;
+    rect(d, mx - 7, my - 5, 15, 11, C_FOG);
+    rect(d, mx - 6, my - 6, 13, 12, C_LIGHT);
+    rect(d, mx - 3, my - 7, 7, 14, C_LIGHT);
+    rect(d, mx - 4, my - 4, 8, 8, C_LIGHT);
+    rect(d, mx + 2, my - 5, 5, 10, C_BLACK);
+    rect(d, mx + 4, my - 3, 3, 6, C_BLACK);
+
+    /* Distant pines form a broken silhouette along the horizon. */
+    for (int i = 0; i < 22; ++i) {
+        const int x = i * w / 21 - w / 35;
+        const int tree_h = 5 + ((i * 7 + 3) % 12);
+        const int tree_w = 3 + ((i * 5 + 1) % 5);
+        const int base = horizon + 2;
+        rect(d, x, base - tree_h, tree_w, tree_h + 2, C_SILHOUETTE);
+        rect(d, x - 2, base - tree_h / 2, tree_w + 4, tree_h / 3 + 1,
+             C_SILHOUETTE);
+        rect(d, x - 1, base - tree_h * 3 / 4, tree_w + 2,
+             tree_h / 3 + 1, C_SILHOUETTE);
+    }
 }
 
 void game_render(const dr_game_t *g, const dr_draw_api_t *d) {
