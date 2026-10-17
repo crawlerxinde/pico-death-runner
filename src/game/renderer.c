@@ -62,7 +62,7 @@ static void draw_hud(const dr_game_t *g, const dr_draw_api_t *d) {
 
 /* Fixed star positions keep the night sky stable across frames and replays. */
 static void draw_atmosphere(const dr_draw_api_t *d, int w, int horizon) {
-    static const uint8_t stars[][2] = {
+    static const uint16_t stars[][2] = {
         {5, 9}, {13, 25}, {23, 14}, {31, 35}, {42, 8}, {54, 20},
         {68, 12}, {79, 30}, {93, 7}, {107, 22}, {121, 11}, {137, 29},
         {151, 15}, {166, 6}, {183, 24}, {199, 10}, {214, 34}, {231, 17},
