@@ -29,7 +29,7 @@ add_executable(pico-death-runner
 )
 
 pico_generate_pio_header(
-    pico-death-runner
+    QSPI_PIO
     "${QSPI_DIR}/qspi.pio"
     OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated"
 )
