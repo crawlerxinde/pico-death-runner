@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+int smoke_test(void);
+
 typedef struct {
     unsigned clears;
     unsigned rects;
@@ -85,6 +87,7 @@ static void test_renderer_uses_draw_callbacks(void) {
 }
 
 int main(void) {
+    assert(smoke_test() == 0);
     test_tilt_deadzone_and_clamp();
     test_collision_transitions_to_game_over();
     test_grave_ring_buffer();
