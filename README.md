@@ -9,23 +9,26 @@ A portable C game-core prototype for a Dead Runner-inspired pseudo-3D runner, ta
 - **M2:** player movement, obstacle collision, game-over and restart behavior.
 - **M3:** in-RAM grave records and a normalized tilt-input adapter hook.
 
+## Host tests
+
+GitHub Actions compiles the portable C core with strict warnings and runs smoke and deterministic tests on pushes to `main` and pull requests.
+
+Local command:
+
+```sh
+cc -std=c11 -Wall -Wextra -Werror -pedantic -Isrc/game \
+  src/game/game.c src/game/renderer.c tests/smoke.c tests/host_tests.c \
+  -lm -o /tmp/dead-runner-tests
+/tmp/dead-runner-tests
+```
+
+These tests validate game-core behavior and renderer callbacks only. They do not validate LVGL integration or board hardware.
+
 ## Important limitations
 
 This repository is **not yet a complete board firmware project**. It does not currently include Waveshare's board support package, AXS15231B LCD/QSPI initialization, touch driver, QMI8658 sensor driver, an LVGL adapter, or a ready-to-flash UF2. Hardware integration and on-device performance have not yet been verified.
 
 The game core is intentionally separated from LVGL and the vendor BSP. Use the official Waveshare C/LVGL example for this exact board as the hardware foundation, preserving its display, touch, and IMU initialization. Add `src/game/game.c` and `src/game/renderer.c` to that build, then implement the drawing callbacks declared in `src/game/game.h` using the LVGL version shipped with the vendor example.
-
-## Host-side smoke test
-
-With a C compiler installed, run from the repository root:
-
-```sh
-cc -std=c11 -Wall -Wextra -Werror -Isrc/game \
-  src/game/game.c src/game/renderer.c tests/smoke.c -lm -o /tmp/dead-runner-smoke
-/tmp/dead-runner-smoke
-```
-
-This smoke test checks the portable game core only; it does not validate LVGL integration or board hardware.
 
 ## Memory and rendering notes
 
