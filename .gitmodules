@@ -1,0 +1,3 @@
+[submodule "vendor/pico-digital-clock"]
+	path = vendor/pico-digital-clock
+	url = https://github.com/crawlerxinde/pico-digital-clock.git
