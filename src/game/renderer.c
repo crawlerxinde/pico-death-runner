@@ -2,7 +2,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#define C_BLACK 0x0000u\n#define C_SILHOUETTE 0x10A2u
+#define C_BLACK 0x0000u
+#define C_SILHOUETTE 0x10A2u
 #define C_FOG   0x3186u
 #define C_TREE  0x632Cu
 #define C_LIGHT 0xBDF7u
