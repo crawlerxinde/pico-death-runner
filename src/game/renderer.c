@@ -109,6 +109,7 @@ void game_render(const dr_game_t *g, const dr_draw_api_t *d) {
     if (d->clear) d->clear(d->ctx, C_BLACK);
     const int w = d->width, h = d->height;
     const int horizon = h * 34 / 100;
+    draw_atmosphere(d, w, horizon);
     rect(d, 0, horizon, w, h - horizon, C_GROUND);
     for (int i = 0; i < 4; ++i) rect(d, 0, horizon + i * 5, w, 2, C_FOG);
     if (d->line) {
