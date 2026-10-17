@@ -36,9 +36,9 @@ static void test_tilt_deadzone_and_clamp(void) {
     game_set_tilt_input(&game, 0.02f, 0.05f, 3.0f);
     assert(game.input_axis == 0.0f);
     game_set_tilt_input(&game, 0.5f, 0.05f, 3.0f);
-    assert(game.input_axis > 1.0f - 0.0001f);
+    assert(game.input_axis < 1.0f + 0.0001f && game.input_axis > 0.999f);
     game_set_tilt_input(&game, -0.5f, 0.05f, 3.0f);
-    assert(game.input_axis < -1.0f + 0.0001f);
+    assert(game.input_axis > -1.0f - 0.0001f && game.input_axis < -0.999f);
 }
 
 static void test_collision_transitions_to_game_over(void) {
@@ -53,6 +53,8 @@ static void test_collision_transitions_to_game_over(void) {
     game.player_x = 0.0f;
     game_update(&game, 100u);
     assert(game.state == DR_STATE_GAME_OVER);
+    assert(game.grave_count == 1u);
+    assert(game.graves[0].x == game.player_x);
 }
 
 static void test_grave_ring_buffer(void) {
@@ -64,6 +66,41 @@ static void test_grave_ring_buffer(void) {
     assert(game.grave_cursor == 1u);
     assert(game.graves[0].x == 1.0f);
     assert(game.graves[0].z == (float)DR_MAX_GRAVES);
+}
+
+static void test_restart_preserves_best_and_graves(void) {
+    dr_game_t game;
+    game_init(&game, 5u);
+    game_start(&game);
+    game_update(&game, 100u);
+    game_update(&game, 100u);
+    const uint32_t best = game.best_score;
+    game_add_grave(&game, -0.25f, 7.0f);
+    const size_t grave_count = game.grave_count;
+    game_restart(&game);
+    assert(game.state == DR_STATE_RUNNING);
+    assert(game.score == 0u);
+    assert(game.best_score == best);
+    assert(game.grave_count == grave_count);
+    assert(game.graves[grave_count - 1u].x == -0.25f);
+    assert(game.speed >= 14.0f);
+}
+
+static void test_speed_ramps_and_caps(void) {
+    dr_game_t game;
+    game_init(&game, 6u);
+    game_start(&game);
+    game_update(&game, 100u);
+    const float early_speed = game.speed;
+    for (unsigned i = 0; i < 1000u && game.state == DR_STATE_RUNNING; ++i) {
+        for (size_t j = 0; j < DR_MAX_OBJECTS; ++j) {
+            if (game.objects[j].active) game.objects[j].x = 1.0f;
+        }
+        game_set_input(&game, -1.0f);
+        game_update(&game, 100u);
+    }
+    assert(game.speed >= early_speed);
+    assert(game.speed <= 28.0f);
 }
 
 static void test_renderer_uses_draw_callbacks(void) {
@@ -84,6 +121,7 @@ static void test_renderer_uses_draw_callbacks(void) {
     assert(counts.clears == 1u);
     assert(counts.rects > 0u);
     assert(counts.lines > 0u);
+    assert(counts.rects > 100u);
 }
 
 int main(void) {
@@ -91,6 +129,8 @@ int main(void) {
     test_tilt_deadzone_and_clamp();
     test_collision_transitions_to_game_over();
     test_grave_ring_buffer();
+    test_restart_preserves_best_and_graves();
+    test_speed_ramps_and_caps();
     test_renderer_uses_draw_callbacks();
     puts("host tests: PASS");
     return 0;
