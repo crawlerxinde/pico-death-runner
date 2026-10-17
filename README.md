@@ -13,6 +13,9 @@ targeting the Waveshare RP2350-Touch-LCD-3.49.
   [pico-digital-clock](https://github.com/crawlerxinde/pico-digital-clock)
   hardware drivers as a pinned submodule; landscape renderer adapter, touch
   start/restart, and QMI8658 tilt input are wired in.
+- **Gameplay polish:** on-screen score and session best, a capped speed ramp,
+  game-state prompts, and graves/high score retained across restarts. These
+  records are RAM-only and are lost when the board powers off.
 
 ## Host tests
 
@@ -46,7 +49,8 @@ cmake --build build
 ```
 
 The resulting firmware is `build/pico-death-runner.uf2`. GitHub Actions also
-builds the board target on pull requests.
+builds the board target on pull requests and publishes the UF2 as a downloadable
+workflow artifact.
 
 ## Board bring-up notes
 
@@ -54,9 +58,9 @@ builds the board target on pull requests.
 - A single 172 × 640 RGB565 framebuffer is rotated into physical panel order
   (220,160 bytes), avoiding two full-screen buffers in internal SRAM.
 - Tap to start and tap after a collision to restart.
-- Tilt steering reads the QMI8658 accelerometer; its axis and sign need
-  verification on the actual board.
-- The board CI build verifies compilation and UF2 generation, not physical
-  display orientation, colors, input response, or frame pacing.
+- Tilt steering reads the QMI8658 accelerometer; its axis and sign were verified
+  on the physical board during bring-up.
+- CI verifies compilation and UF2 generation; hardware behavior should still be
+  tested after significant renderer or input changes.
 
 See [src/board/README.md](src/board/README.md) for board-target details.

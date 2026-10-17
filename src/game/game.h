@@ -59,6 +59,7 @@ typedef struct {
     size_t grave_count;
     size_t grave_cursor;
     uint32_t score;
+    uint32_t best_score;
 } dr_game_t;
 
 void game_init(dr_game_t *g, uint32_t seed);
