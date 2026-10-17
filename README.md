@@ -16,6 +16,9 @@ targeting the Waveshare RP2350-Touch-LCD-3.49.
 - **Gameplay polish:** on-screen score and session best, a capped speed ramp,
   game-state prompts, and graves/high score retained across restarts. These
   records are RAM-only and are lost when the board powers off.
+- **Night-forest atmosphere:** fixed stars, a pixel moon, distant tree silhouettes,
+  fog bands, and perspective road edges add depth without frame-time randomness
+  or additional framebuffer memory.
 
 ## Host tests
 
