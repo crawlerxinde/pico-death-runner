@@ -1,6 +1,7 @@
 #include "game.h"
 #include <assert.h>
-int main(void) {
+
+int smoke_test(void) {
     dr_game_t g;
     game_init(&g, 1234u);
     assert(g.state == DR_STATE_READY);
