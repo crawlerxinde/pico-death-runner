@@ -1,0 +1,24 @@
+name: Host tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Compile with strict warnings
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -pedantic -Isrc/game \
+            src/game/game.c src/game/renderer.c tests/smoke.c tests/host_tests.c \
+            -lm -o host-tests
+      - name: Run tests
+        run: ./host-tests
