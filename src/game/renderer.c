@@ -116,6 +116,21 @@ void game_render(const dr_game_t *g, const dr_draw_api_t *d) {
             d->line(d->ctx, 0, y, w - 1, y, C_FOG);
         }
     }
+
+    /* Road edges converge at the horizon; short dashes imply forward motion. */
+    if (d->line) {
+        const int vanish_x = w / 2;
+        d->line(d->ctx, vanish_x - 9, horizon + 1, 0, h - 1, C_FOG);
+        d->line(d->ctx, vanish_x + 9, horizon + 1, w - 1, h - 1, C_FOG);
+        for (int i = 0; i < 5; ++i) {
+            const int y0 = horizon + 8 + i * 11;
+            const int half = 2 + i * 4;
+            if (y0 < h - 2) {
+                d->line(d->ctx, vanish_x - half, y0, vanish_x - half - 2, y0 + 4, C_FOG);
+                d->line(d->ctx, vanish_x + half, y0, vanish_x + half + 2, y0 + 4, C_FOG);
+            }
+        }
+    }
     const float focal = (float)w * 0.28f;
     for (size_t i = 0; i < DR_MAX_OBJECTS; ++i) {
         const dr_object_t *o = &g->objects[i];
