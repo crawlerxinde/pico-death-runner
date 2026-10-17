@@ -92,15 +92,15 @@ static void test_speed_ramps_and_caps(void) {
     game_start(&game);
     game_update(&game, 100u);
     const float early_speed = game.speed;
-    for (unsigned i = 0; i < 1000u && game.state == DR_STATE_RUNNING; ++i) {
-        for (size_t j = 0; j < DR_MAX_OBJECTS; ++j) {
-            if (game.objects[j].active) game.objects[j].x = 1.0f;
-        }
-        game_set_input(&game, -1.0f);
-        game_update(&game, 100u);
-    }
-    assert(game.speed >= early_speed);
-    assert(game.speed <= 28.0f);
+    game_update(&game, 100u);
+    assert(game.speed > early_speed);
+
+    game_init(&game, 7u);
+    game_start(&game);
+    for (size_t i = 0; i < DR_MAX_OBJECTS; ++i) game.objects[i].active = false;
+    game.elapsed_s = 100.0f;
+    game_update(&game, 1u);
+    assert(game.speed == 28.0f);
 }
 
 static void test_renderer_uses_draw_callbacks(void) {
